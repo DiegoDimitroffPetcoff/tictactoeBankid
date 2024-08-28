@@ -8,21 +8,25 @@ const bankidApiUrlV6 = "https://appapi2.test.bankid.com/rp/v6.0/collect";
 const certPath = fs.readFileSync(
   path.join(__dirname, "../certificates/FPTestcert5_20240610.p12")
 );
+const cert = fs.readFileSync(
+  path.join(__dirname, "../certificates/certificate.pem")
+);
+const key = fs.readFileSync(path.join(__dirname, "../certificates/key.pem"));
 
 const password = "qwerty123";
 
 const httpsAgent = new https.Agent({
-  pfx: certPath,
+  cert: cert,
+  key: key,
   passphrase: password,
   rejectUnauthorized: false,
 });
 
 async function collectController(bId) {
   try {
-/*     if (!bId) {
+    if (!bId) {
       return "no logged";
-    } */
-console.log(bId);
+    }
 
     const { orderRef, autoStartToken, qrStartToken, qrStartSecret } = bId;
 

@@ -9,18 +9,11 @@ const base64 = require("base-64");
 const certPath = fs.readFileSync(
   path.join(__dirname, "../certificates/FPTestcert5_20240610.p12")
 );
-
-const password = "qwerty123";
+const cert = fs.readFileSync(
+  path.join(__dirname, "../certificates/certificate.pem")
+);
 const key = fs.readFileSync(path.join(__dirname, "../certificates/key.pem"));
-const cert = fs.readFileSync(path.join(__dirname, "../certificates/crt.pem"));
-
-const httpsAgent = new https.Agent({
-/*   pfx: certPath, */
-  passphrase: password,
-  rejectUnauthorized: false,
-  key: fs.readFileSync(path.join(__dirname,'./bankid-test.key.pem')),
-  cert: fs.readFileSync(path.join(__dirname,'./bankid-test.crt.pem')),  
-});
+const password = "qwerty123";
 
 async function signController(bId, userIP) {
   try {
@@ -33,12 +26,20 @@ async function signController(bId, userIP) {
 
     const requestBody = {
       endUserIp: userIP,
-      orderRef: orderRef,
+   /*    orderRef: orderRef, */
       userVisibleData: userVisibleDataEncoded,
       requirement: {
         risk: "low",
       },
     };
+
+    const httpsAgent = new https.Agent({
+   /*    pfx: certPath, */
+      cert: cert,
+      key: key,
+      passphrase: password,
+      rejectUnauthorized: false,
+    });
 
     const response = await axios.post(bankidApiUrlV6, requestBody, {
       headers: {
