@@ -78,7 +78,57 @@ const app = require("./src/app/app.js");
  *                   description: Error message.
  */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     QRCode:
+ *       type: object
+ *       properties:
+ *         qrBase64:
+ *           type: string
+ *           description: Base64 encoded QR code image as a plain text string.
+ *   responses:
+ *     NotFound:
+ *       description: Resource not found
+ *     InternalServerError:
+ *       description: Server error
+ */
 
+/**
+ * @swagger
+ * /sign:
+ *   get:
+ *     summary: Generate QR code and return Base64 string
+ *     description: Generates a QR code and returns it as a Base64-encoded string. This Base64 string can be used to retrieve the QR code image from the /qr endpoint.
+ *     responses:
+ *       200:
+ *         description: Successful response with QR code Base64 string
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Error generating QR code
+ */
+
+/**
+ * @swagger
+ * /qr:
+ *   get:
+ *     summary: Retrieve QR code image
+ *     description: Retrieves the QR code image as a PNG from the previously generated Base64 string. This endpoint requires that the /sign endpoint has been called first to generate the QR code.
+ *     responses:
+ *       200:
+ *         description: Successful response with QR code image in PNG format
+ *         content:
+ *           image/png:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       500:
+ *         description: Error retrieving QR code image
+ */
 const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
   console.log(`Listening on http://localhost:${PORT}`);

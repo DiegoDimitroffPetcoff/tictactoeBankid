@@ -22,19 +22,16 @@ async function signController(bId, userIP) {
     }
     const userVisibleData = "Este es un ejemplo de texto para ser firmado";
     const userVisibleDataEncoded = base64.encode(userVisibleData);
-    const { orderRef, autoStartToken, qrStartToken, qrStartSecret } = bId;
-
     const requestBody = {
       endUserIp: userIP,
-   /*    orderRef: orderRef, */
+      /*    orderRef: orderRef, */
       userVisibleData: userVisibleDataEncoded,
       requirement: {
         risk: "low",
       },
     };
-
     const httpsAgent = new https.Agent({
-   /*    pfx: certPath, */
+      /*    pfx: certPath, */
       cert: cert,
       key: key,
       passphrase: password,

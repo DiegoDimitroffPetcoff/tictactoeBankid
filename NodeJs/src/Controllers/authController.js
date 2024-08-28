@@ -23,6 +23,7 @@ async function authController(userIP) {
   });
 
   const httpsAgent = new https.Agent({
+    /*     pfx:clientCert, */
     cert: cert,
     key: key,
     passphrase: password,
@@ -38,7 +39,7 @@ async function authController(userIP) {
       httpsAgent: httpsAgent,
       timeout: 5000,
     });
-    console.log("auth: ",response.data);
+
     return response.data;
   } catch (error) {
     console.error(
