@@ -105,11 +105,12 @@ const app = require("./src/app/app.js");
  *       200:
  *         description: Successful response with QR code Base64 string
  *         content:
- *           text/plain:
+ *           image/png:
  *             schema:
  *               type: string
+ *               format: binary
  *       500:
- *         description: Error generating QR code
+ *         description:  Error retrieving QR code image
  */
 
 /**

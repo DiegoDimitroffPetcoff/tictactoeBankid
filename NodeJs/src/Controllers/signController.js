@@ -45,7 +45,19 @@ async function signController(bId, userIP) {
       httpsAgent: httpsAgent,
       timeout: 5000,
     });
-    return response.data;
+
+    const { orderRef, autoStartToken, qrStartToken, qrStartSecret } =
+      response.data;
+
+    const orderTime = Math.floor(Date.now() / 1000);
+    const allData = {
+      orderRef,
+      autoStartToken,
+      qrStartToken,
+      qrStartSecret,
+      orderTime,
+    };
+    return allData;
   } catch (error) {
     console.error(
       "Error description:",
