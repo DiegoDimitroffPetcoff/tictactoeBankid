@@ -15,12 +15,8 @@ const cert = fs.readFileSync(
 const key = fs.readFileSync(path.join(__dirname, "../certificates/key.pem"));
 const password = "qwerty123";
 
-async function cancelController(orderRef) {
+async function cancelController(orderRef, route) {
   try {
-    if (!bId) {
-      return "no logged";
-    }
-
     const requestBody = {
       orderRef: orderRef,
     };
@@ -39,7 +35,7 @@ async function cancelController(orderRef) {
       httpsAgent: httpsAgent,
       timeout: 5000,
     });
-    const response = { route_canceled: "/sign", orderRef: orderRef };
+    const response = { route_canceled:route , orderRef: orderRef };
     return response;
   } catch (error) {
     console.error(

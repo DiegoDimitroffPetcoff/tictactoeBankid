@@ -23,7 +23,7 @@ route.get("/sign", async (req, res) => {
       } catch (error) {
         console.error("Error updating QR code:", error.message);
       }
-    }, 1000); // Cada segundo
+    }, 1000); 
 
     res.setHeader("Content-Type", "text/plain");
     res.status(200).send(qrData);
@@ -57,7 +57,7 @@ route.get("/sign/cancel", async (req, res) => {
     if (!qrData.orderRef) {
       throw new Error(" There is no order ref");
     }
-    const resp = await cancelController(qrData.orderRef);
+    const resp = await cancelController(qrData.orderRef, "/sign");
     if (!resp) {
       return res
         .status(400)

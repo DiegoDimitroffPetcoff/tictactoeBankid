@@ -20,6 +20,8 @@ function errorDescriptions(key) {
       return "The service is temporarily unavailable. RP may try again without informing the user. If this error occurs repeatedly, RP must inform the user. Message RFA5 should be used.";
     case "unknownErrorCode":
       return "We may introduce new error codes without prior notice. RP should handle unknown error codes and inform the user. Message RFA22 should be used. RP should update their implementation to support the new errorCode as soon as possible.";
+    case "Request failed with status code 400":
+      return "An identification or signing for this personal number is already started. Please try again";
     default:
       return "An unknown error occurred. Please check the error code and consult the documentation for more information.";
   }

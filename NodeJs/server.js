@@ -1,6 +1,99 @@
 const { swaggerDocs: v1SwaggerDocs } = require("./swagger.js");
 const app = require("./src/app/app.js");
 /**
+ * @swagger
+ * /phone:
+ *   post:
+ *     summary: Authenticate a user via phone number
+ *     description: Initiates an authentication process for a user using their phone number. The request requires a personal number to identify the user and initiate the authentication process.
+ *     requestBody:
+ *       description: The request body containing the personal number to authenticate.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               personalNumber:
+ *                 type: string
+ *                 description: The personal number of the user to authenticate.
+ *                 example: "1234567890"
+ *               callInitiator:
+ *                 type: string
+ *                 description: Indicates who is initiating the call. Default is "user".
+ *                 example: "user"
+ *             required:
+ *               - personalNumber
+ *     responses:
+ *       200:
+ *         description: Successful initiation of authentication process.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Status of the authentication process initiation.
+ *                   example: "success"
+ *                 message:
+ *                   type: string
+ *                   description: Detailed message about the result of the initiation.
+ *                   example: "Authentication process started successfully."
+ *       400:
+ *         description: Bad Request. Invalid personal number or other request issues.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errorCode:
+ *                   type: string
+ *                   description: Error code indicating the reason for the failure.
+ *                   example: "invalidParameters"
+ *                 errorMessage:
+ *                   type: string
+ *                   description: Description of the error that occurred.
+ *                   example: "Invalid personal number provided."
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errorCode:
+ *                   type: string
+ *                   description: Error code indicating the type of server error.
+ *                   example: "internalError"
+ *                 errorMessage:
+ *                   type: string
+ *                   description: Detailed message about the server error.
+ *                   example: "An internal server error occurred."
+ */
+/**
+ * @swagger
+ * /phone/cancel:
+ *   get:
+ *     summary: Cancel an ongoing transaction
+ *     description: Cancels an ongoing transaction using the provided order reference. Returns the response from the cancel controller or an error message if the operation fails.
+ 
+ *     responses:
+ *       200:
+ *         description: Successful cancellation of the transaction
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   description: Response from the cancel controller
+ *       400:
+ *         description: No response received from the cancel controller
+ *       500:
+ *         description: Error cancelling the transaction
+ */
+/**
  * @openapi
  * /:
  *   get:
@@ -37,7 +130,29 @@ const app = require("./src/app/app.js");
  *                   type: string
  *                   description: Error message.
  */
-
+/**
+ * @swagger
+ * /cancel:
+ *   get:
+ *     summary: Cancel an ongoing transaction
+ *     description: Cancels an ongoing transaction using the provided order reference. Returns the response from the cancel controller or an error message if the operation fails.
+ 
+ *     responses:
+ *       200:
+ *         description: Successful cancellation of the transaction
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   description: Response from the cancel controller
+ *       400:
+ *         description: No response received from the cancel controller
+ *       500:
+ *         description: Error cancelling the transaction
+ */
 /**
  * @openapi
  * /collect:

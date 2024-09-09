@@ -1,18 +1,17 @@
 const { Router } = require("express");
-const authController = require("../Controllers/authController");
+const authPhoneController = require("../Controllers/authPhoneController");
 const errorDescriptions = require("../utils/errorDescriptions");
 const cancelController = require("../Controllers/cancelController");
 
 const route = Router();
-let orderRef
-route.get("/", async (req, res) => {
-  const userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  console.log("se ejecuta /");
+let orderRef = null;
 
+route.post("/phone", async (req, res) => {
+  const personalNumber = "190000000000";
   try {
-    bId = await authController(userIP);
-    orderRef = bId.orderRef
-    res.send(bId);
+    const response = await authPhoneController(personalNumber);
+    orderRef = response.orderRef;
+    res.status(200).send(response);
   } catch (error) {
     const errorResponde = errorDescriptions(error.message);
     res.status(500).send({
@@ -22,12 +21,12 @@ route.get("/", async (req, res) => {
   }
 });
 
-route.get("/cancel", async (req, res) => {
+route.get("/phone/cancel", async (req, res) => {
   try {
     if (!orderRef) {
       throw new Error(" There is no order ref");
     }
-    const resp = await cancelController(orderRef, "/");
+    const resp = await cancelController(orderRef, "/phone");
     if (!resp) {
       return res
         .status(400)
@@ -35,7 +34,7 @@ route.get("/cancel", async (req, res) => {
     }
     res.status(200).send(resp);
   } catch (error) {
-    const errorResponde = errorDescriptions(error.message)
+    const errorResponde = errorDescriptions(error.message);
     res.status(500).send({
       errorCode: error.message,
       details: errorResponde,
