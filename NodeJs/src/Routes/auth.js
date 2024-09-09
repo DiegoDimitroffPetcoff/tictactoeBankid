@@ -5,6 +5,8 @@ const route = Router();
 
 route.get("/", async (req, res) => {
   const userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+console.log("se ejecuta /");
+
   try {
     bId = await authController(userIP);
 

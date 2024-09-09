@@ -1,10 +1,9 @@
 const { Router } = require("express");
 const signController = require("../Controllers/signController.js");
+const cancelController = require("../Controllers/cancelController.js");
+
 const updateQRCode = require("../utils/updateQrCode.js");
 
-const fs = require("fs");
-const { swaggerDocs: v1SwaggerDocs } = require("../../swagger");
-const qrGenerator = require("../utils/qrGenerator.js");
 const route = Router();
 let qrData;
 let intervalId = null;
@@ -16,11 +15,11 @@ route.get("/sign", async (req, res) => {
       return res.status(400).send("No se recibió respuesta de signController.");
     }
     qrData = await updateQRCode(resp);
+
     if (intervalId) clearInterval(intervalId);
     intervalId = setInterval(async () => {
       try {
         qrData = await updateQRCode(resp);
-        console.log(qrData.qrDataNoHash);
       } catch (error) {
         console.error("Error updating QR code:", error.message);
       }
@@ -40,6 +39,23 @@ route.get("/qr", (req, res) => {
     }
     res.setHeader("Content-Type", "image/png");
     res.send(Buffer.from(qrData.qrBase64c, "base64"));
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+route.get("/sign/cancel", async (req, res) => {
+  try {
+    if (!qrData.orderRef) {
+      throw new Error(" There is no order ref");
+    }
+    const resp = await cancelController(qrData.orderRef);
+    if (!resp) {
+      return res
+        .status(400)
+        .send("No se recibió respuesta de cancelController.");
+    }
+    res.status(200).send(resp);
   } catch (error) {
     res.status(500).send(error.message);
   }

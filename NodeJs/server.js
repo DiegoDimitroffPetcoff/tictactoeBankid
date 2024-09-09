@@ -105,12 +105,15 @@ const app = require("./src/app/app.js");
  *       200:
  *         description: Successful response with QR code Base64 string
  *         content:
- *           image/png:
+ *           application/json:
  *             schema:
- *               type: string
- *               format: binary
+ *               type: object
+ *               properties:
+ *                 base64:
+ *                   type: string
+ *                   description: Base64-encoded QR code image
  *       500:
- *         description:  Error retrieving QR code image
+ *         description: Error retrieving QR code image
  */
 
 /**
@@ -130,6 +133,31 @@ const app = require("./src/app/app.js");
  *       500:
  *         description: Error retrieving QR code image
  */
+
+/**
+ * @swagger
+ * /sign/cancel:
+ *   get:
+ *     summary: Cancel an ongoing transaction
+ *     description: Cancels an ongoing transaction using the provided order reference. Returns the response from the cancel controller or an error message if the operation fails.
+ 
+ *     responses:
+ *       200:
+ *         description: Successful cancellation of the transaction
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   description: Response from the cancel controller
+ *       400:
+ *         description: No response received from the cancel controller
+ *       500:
+ *         description: Error cancelling the transaction
+ */
+
 const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
   console.log(`Listening on http://localhost:${PORT}`);
