@@ -1,12 +1,12 @@
 const { Router } = require("express");
 const signController = require("../Controllers/signController.js");
 const cancelController = require("../Controllers/cancelController.js");
-
 const updateQRCode = require("../utils/updateQrCode.js");
-
+const errorDescriptions = require("../utils/errorDescriptions.js");
 const route = Router();
 let qrData;
 let intervalId = null;
+
 route.get("/sign", async (req, res) => {
   const userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   try {
@@ -28,7 +28,11 @@ route.get("/sign", async (req, res) => {
     res.setHeader("Content-Type", "text/plain");
     res.status(200).send(qrData);
   } catch (error) {
-    res.status(500).send(error.message);
+    const errorResponde = errorDescriptions(error.message)
+    res.status(500).send({
+      errorCode: error.message,
+      details: errorResponde,
+    });
   }
 });
 
@@ -40,7 +44,11 @@ route.get("/qr", (req, res) => {
     res.setHeader("Content-Type", "image/png");
     res.send(Buffer.from(qrData.qrBase64c, "base64"));
   } catch (error) {
-    res.status(500).send(error.message);
+    const errorResponde = errorDescriptions(error.message)
+    res.status(500).send({
+      errorCode: error.message,
+      details: errorResponde,
+    });
   }
 });
 
@@ -57,7 +65,11 @@ route.get("/sign/cancel", async (req, res) => {
     }
     res.status(200).send(resp);
   } catch (error) {
-    res.status(500).send(error.message);
+    const errorResponde = errorDescriptions(error.message)
+    res.status(500).send({
+      errorCode: error.message,
+      details: errorResponde,
+    });
   }
 });
 module.exports = route;
