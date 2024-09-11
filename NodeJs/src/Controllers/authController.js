@@ -2,14 +2,14 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
-
-const bankidApiUrlV5 = "https://appapi2.test.bankid.com/rp/v5.1/auth";
+/* 
+const bankidApiUrlV5 = "https://appapi2.test.bankid.com/rp/v5.1/auth"; */
 
 const bankidApiUrlV6 = "https://appapi2.test.bankid.com/rp/v6.0/auth";
 
-const clientCert = fs.readFileSync(
+/* const clientCert = fs.readFileSync(
   path.join(__dirname, "../certificates/FPTestcert5_20240610.p12")
-);
+); */
 const cert = fs.readFileSync(
   path.join(__dirname, "../certificates/certificate.pem")
 );
