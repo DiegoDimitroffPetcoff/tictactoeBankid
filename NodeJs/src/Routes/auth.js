@@ -4,14 +4,14 @@ const errorDescriptions = require("../utils/errorDescriptions");
 const cancelController = require("../Controllers/cancelController");
 
 const route = Router();
-let orderRef
+let orderRef;
 route.get("/", async (req, res) => {
   const userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   console.log("se ejecuta /");
 
   try {
     bId = await authController(userIP);
-    orderRef = bId.orderRef
+    orderRef = bId.orderRef;
     res.send(bId);
   } catch (error) {
     const errorResponde = errorDescriptions(error.message);
@@ -24,6 +24,9 @@ route.get("/", async (req, res) => {
 
 route.get("/cancel", async (req, res) => {
   try {
+    console.log("/cancel");
+    console.log(orderRef);
+
     if (!orderRef) {
       throw new Error(" There is no order ref");
     }
@@ -35,7 +38,7 @@ route.get("/cancel", async (req, res) => {
     }
     res.status(200).send(resp);
   } catch (error) {
-    const errorResponde = errorDescriptions(error.message)
+    const errorResponde = errorDescriptions(error.message);
     res.status(500).send({
       errorCode: error.message,
       details: errorResponde,

@@ -40,6 +40,7 @@ async function authController(userIP) {
       timeout: 5000,
     });
 
+
     return response.data;
   } catch (error) {
     console.error(
