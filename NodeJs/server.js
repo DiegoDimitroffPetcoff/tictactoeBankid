@@ -272,6 +272,82 @@ const app = require("./src/app/app.js");
  *       500:
  *         description: Error cancelling the transaction
  */
+/**
+ * @swagger
+ * /econest/create-payment:
+ *   post:
+ *     summary: Create a payment
+ *     description: Initiates a payment process using the DIBS payment API. The request requires a payload containing payment details in JSON format.
+ *     requestBody:
+ *       description: The request body containing payment details.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paymentDetails:
+ *                 type: object
+ *                 description: Payment details required to process the payment.
+ *                 example: 
+ *                   {
+ *                     "amount": 1000,
+ *                     "currency": "SEK",
+ *                     "orderId": "123456789",
+ *                     "description": "Payment for order #123456789"
+ *                   }
+ *             required:
+ *               - paymentDetails
+ *     responses:
+ *       200:
+ *         description: Successful initiation of payment.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: Status of the payment initiation.
+ *                   example: "success"
+ *                 message:
+ *                   type: string
+ *                   description: Detailed message about the result of the payment initiation.
+ *                   example: "Payment initiated successfully."
+ *                 paymentResponse:
+ *                   type: object
+ *                   description: Response from the DIBS payment API.
+ *       400:
+ *         description: Bad Request. Invalid payment details or other request issues.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errorCode:
+ *                   type: string
+ *                   description: Error code indicating the reason for the failure.
+ *                   example: "invalidParameters"
+ *                 errorMessage:
+ *                   type: string
+ *                   description: Description of the error that occurred.
+ *                   example: "Invalid payment details provided."
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errorCode:
+ *                   type: string
+ *                   description: Error code indicating the type of server error.
+ *                   example: "internalError"
+ *                 errorMessage:
+ *                   type: string
+ *                   description: Detailed message about the server error.
+ *                   example: "An internal server error occurred."
+ */
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {
