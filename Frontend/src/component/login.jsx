@@ -55,6 +55,8 @@ export function Login() {
         qrStartSecret
       ).toString(CryptoJS.enc.Hex);
       const qrData = `bankid.${qrStartToken}.${t}.${hmac}`;
+      console.log(qrData);
+      
       setQr(qrData);
       qrList.push(qrData);
     }
