@@ -23,6 +23,7 @@ Before you start, ensure you have the following:
 └── app.js # Main Express application
 
 
+
 ## Code Explanation
 
 ### app.js
@@ -105,24 +106,6 @@ route.post("/econest/create-payment", async (req, res) => {
 });
 
 module.exports = route;
-
-
-
-API Response Example
-When a payment request is made, the following response is possible:
-
-Version 1 Docs Are Available at http://localhost:3000/docs
-Status Code: 401
-Response Headers:
-json
-Copy code
-{
-  "date": "Fri, 04 Oct 2024 10:19:33 GMT",
-  "content-length": "0",
-  "connection": "keep-alive",
-  "server": "Microsoft-IIS/10.0",
-  "request-context": "appId=cid-v1:d7d5f7e2-0d94-424b-b47a-c69bd955a1fa"
-}
 Additional API Endpoints
 In addition to the basic BankID API integration, this project also includes additional endpoints for handling authentication via phone number, canceling transactions, generating QR codes, and retrieving authentication results.
 
@@ -130,6 +113,7 @@ Phone Number Authentication
 POST /phone
 Initiates the authentication process using the user's personal number and call initiator.
 Response Codes:
+
 200: Authentication process successfully initiated.
 400: Invalid request.
 500: Internal server error.
@@ -137,6 +121,7 @@ Cancel Transactions
 GET /phone/cancel
 Cancels an ongoing transaction using an order reference.
 Response Codes:
+
 200: Transaction successfully canceled.
 400: No response from cancel controller.
 500: Error canceling the transaction.
@@ -144,68 +129,46 @@ QR Code Generation
 GET /sign
 Generates a QR code in Base64 format.
 Response Codes:
+
 200: QR code successfully generated.
 500: Error generating QR code.
 Retrieve QR Code Image
 GET /qr
 Retrieves a PNG image of the QR code generated previously.
 Response Codes:
+
 200: QR code image successfully retrieved.
 500: Error retrieving QR code image.
 Collect Authentication Results
 GET /collect
 Retrieves the result of an ongoing authentication order.
 Response Codes:
+
 200: Authentication result successfully retrieved.
 400: Invalid request.
 500: Internal server error.
 Nexi API Key Retrieval
 In addition to the BankID integration, this project will also integrate with the Nexi API for payment processing. To obtain your API Key for Nexi, follow these steps:
 
-
-
-Go to the Nexi Checkout documentation: Nexi Checkout Documentation.
-Access Web Integration: https://developer.nexigroup.com/nexi-checkout/en-EU/docs/web-integration/integrate-checkout-on-your-website-embedded/
-
+Go to the Nexi Checkout documentation.
+Access Web Integration: Nexi Web Integration.
 On the documentation page, navigate to the "Web integration" section.
-Create a Checkout Portal Account
-
-Click on the link to create a Checkout Portal account using your email address.
-Access the Dashboard
-
-Once your account is created, log in to access the dashboard.
-Locate Your API Keys
-
-In the dashboard, find the menu on the left side.
-Navigate to the "Company" tab and then to "Integration."
-Here, you will find your respective API Keys for both live and test modes.
+Create a Checkout Portal Account.
+After creating your account, log in to access the dashboard and retrieve your API keys.
 Error Handling
 Errors are caught and logged to the console. If an error occurs during a request, the server will respond with a 500 status code and the error message.
 
 Installation
 Clone this repository:
-
 bash
 Copy code
 git clone https://github.com/ahmedhussain85/BankID-NodeJS.git
 Install the dependencies:
-
 bash
 Copy code
 npm install
 Run the server:
-
 bash
 Copy code
 npm start
 The server will be listening on http://localhost:3000.
-
-Swagger Documentation
-This API uses Swagger for documenting the endpoints. After starting the server, you can access the Swagger documentation at: http://localhost:3000/api-docs
-
-
-
-
-
-
-

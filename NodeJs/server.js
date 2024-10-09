@@ -348,6 +348,78 @@ const app = require("./src/app/app.js");
  *                   example: "An internal server error occurred."
  */
 
+/**
+ * @swagger
+ * /econest/create-paylink:
+ *   post:
+ *     summary: Create a paylink
+ *     description: Generates a payment link for online transactions. The request requires payment details in the body.
+ *     requestBody:
+ *       description: The request body containing the payment details.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: integer
+ *                 description: The amount to be paid.
+ *                 example: 100
+ *               currency:
+ *                 type: string
+ *                 description: The currency for the payment.
+ *                 example: "EU"
+ *               description:
+ *                 type: string
+ *                 description: Description of the payment.
+ *                 example: "payment"
+ *             required:
+ *               - amount
+ *               - currency
+ *     responses:
+ *       200:
+ *         description: Successful generation of the paylink URL.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indicates whether the paylink generation was successful.
+ *                   example: true
+ *                 paylinkUrl:
+ *                   type: string
+ *                   description: The generated payment URL.
+ *                   example: "https://pay.checkout.com/{paymentId}?amount=100&currency=EU"
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the result of the operation.
+ *                   example: "Paylink URL generated successfully"
+ *       400:
+ *         description: Missing required parameters (`amount` and `currency`).
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Description of the error.
+ *                   example: "Amount and currency are required"
+ *       500:
+ *         description: Internal server error. An unexpected error occurred while generating the paylink.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Description of the error.
+ *                   example: "Failed to generate Paylink URL"
+ */
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(3000, () => {

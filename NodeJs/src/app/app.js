@@ -8,6 +8,7 @@ const collectRoute = require("../Routes/collect.js");
 const signRoute = require("../Routes/sign.js");
 const authPhone = require("../Routes/authPhone.js");
 const authEcoNest = require("../Routes/ecoNest/auth.js");
+const linkEcoNest = require("../Routes/ecoNest/create-paylink");
 
 app.use(cors());
 app.use(express.json());
@@ -19,5 +20,6 @@ app.use(authPhone);
 
 
 app.use(authEcoNest);
+app.use(linkEcoNest);
 
 module.exports = app;
