@@ -104,8 +104,48 @@ route.post("/econest/create-payment", async (req, res) => {
   });
   restreq.end();
 });
+The /econest/create-paylink/create 
+endpoint allows you to dynamically create a customizable One-Page-Shop. This shop showcases items and enables secure payment options for customers. Upon sending a POST request with the shop's name, items, brand colors, and payment methods, the endpoint generates a unique shop ID and returns the URL for the One-Page-Shop, along with embeddable modal and iframe code snippets. These can be easily integrated into a website, allowing customers to complete their purchases directly from the hosted shop.
 
+Request format:
+
+Method: POST
+Body parameters:
+shopName (required)
+items (required)
+brandColors (optional)
+paymentMethods (optional)
 module.exports = route;
+
+## Endpoint: `/econest/create-paylink/create`
+This endpoint is designed to create a new One-Page-Shop for your online store.
+
+### Method:
+`POST`
+
+### Request Body:
+- `shopName` (string, required): The name of your shop.
+- `items` (array, required): A list of items available in the shop. At least one item is required.
+- `brandColors` (object, optional): Custom brand colors for the shop. Defaults are:
+  - `primary`: #000000
+  - `secondary`: #ffffff
+- `paymentMethods` (array, optional): The payment methods to support. Defaults to Visa, Mastercard, and PayPal.
+
+#### Example Request:
+```json
+{
+  "shopName": "My Online Shop",
+  "brandColors": {
+    "primary": "#ff0000",
+    "secondary": "#00ff00"
+  },
+  "items": [
+    { "name": "Item 1", "price": 10 },
+    { "name": "Item 2", "price": 20 }
+  ],
+  "paymentMethods": ["visa", "mastercard"]
+}
+
 Additional API Endpoints
 In addition to the basic BankID API integration, this project also includes additional endpoints for handling authentication via phone number, canceling transactions, generating QR codes, and retrieving authentication results.
 
