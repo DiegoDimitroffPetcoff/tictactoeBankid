@@ -61,7 +61,7 @@ router.get("/econest/:shopId", (req, res) => {
   });
 });
 
-router.put("/:shopId", (req, res) => {
+router.put("/econest/:shopId", (req, res) => {
   const { shopId } = req.params;
   const { shopName, brandColors, items, paymentMethods } = req.body;
   const shop = shops.get(shopId);
@@ -90,7 +90,7 @@ router.put("/:shopId", (req, res) => {
   });
 });
 
-router.delete("/:shopId", (req, res) => {
+router.delete("/econest/:shopId", (req, res) => {
   const { shopId } = req.params;
 
   if (!shops.has(shopId)) {
