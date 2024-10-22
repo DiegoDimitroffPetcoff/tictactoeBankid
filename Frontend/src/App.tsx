@@ -1,38 +1,45 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import appLogo from "/favicon.svg";
-import PWABadge from "./PWABadge.tsx";
-import "./App.css";
-import { Login } from "./component/login.jsx";
+import React, { useState, useEffect } from 'react';
+import BankIDLogin from './components/BankIDLogin';
+import TicTacToe from './components/TicTacToe';
 
 function App() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(10);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          setShowLogin(true);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
   return (
-    <>
-      <Login />
-    </>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="flex flex-col md:flex-row gap-8">
+        {showLogin && !isLoggedIn ? (
+          <BankIDLogin onLoginSuccess={handleLoginSuccess} />
+        ) : (
+          <TicTacToe 
+            isDisabled={showLogin && !isLoggedIn} 
+            timeRemaining={timeRemaining}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 
 export default App;
-/*       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={appLogo} className="logo" alt="vite-project logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>vite-project</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> 
-         <PWABadge />
-      */
