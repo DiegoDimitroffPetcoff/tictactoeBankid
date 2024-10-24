@@ -45,5 +45,51 @@ route.get("/cancel", async (req, res) => {
     });
   }
 });
+route.post('/auth', async (req, res) => {
+  try {
+    const response = await axios.post('https://appapi2.test.bankid.com/rp/v5.1/auth', {
+      personalNumber: req.body.personalNumber,
+      endUserIp: req.ip
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.BANKID_API_KEY}`
+      },
+      httpsAgent: new https.Agent({
+        cert: fs.readFileSync('path/to/your/certificate.pem'),
+        key: fs.readFileSync('path/to/your/key.pem'),
+        ca: fs.readFileSync('path/to/your/ca.pem')
+      })
+    })
 
+    res.json(response.data)
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message)
+    res.status(500).json({ error: 'Error al iniciar la autenticación' })
+  }
+})
+
+// Ruta para verificar el estado de la autenticación
+route.post('/collect', async (req, res) => {
+  try {
+    const response = await axios.post('https://appapi2.test.bankid.com/rp/v5.1/collect', {
+      orderRef: req.body.orderRef
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.BANKID_API_KEY}`
+      },
+      httpsAgent: new https.Agent({
+        cert: fs.readFileSync('path/to/your/certificate.pem'),
+        key: fs.readFileSync('path/to/your/key.pem'),
+        ca: fs.readFileSync('path/to/your/ca.pem')
+      })
+    })
+
+    res.json(response.data)
+  } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message)
+    res.status(500).json({ error: 'Error al verificar la autenticación' })
+  }
+})
 module.exports = route;
