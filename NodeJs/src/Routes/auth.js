@@ -11,7 +11,9 @@ const route = Router();
 let orderRef;
 
 // Configuración de certificados
-const cert = fs.readFileSync(path.join(__dirname, "../certificates/certificate.pem"));
+const cert = fs.readFileSync(
+  path.join(__dirname, "../certificates/certificate.pem")
+);
 const key = fs.readFileSync(path.join(__dirname, "../certificates/key.pem"));
 const password = "qwerty123";
 
@@ -24,12 +26,29 @@ const httpsAgent = new https.Agent({
 
 route.get("/", async (req, res) => {
   const userIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  console.log("se ejecuta /");
+  const isMobile = /mobile|iphone|ipod|android/i.test(
+    req.headers["user-agent"]
+  );
 
   try {
-    bId = await authController(userIP);
+    const bId = await authController(userIP);
     orderRef = bId.orderRef;
-    res.send(bId);
+
+    // Construir la URL según el tipo de dispositivo
+    let bankIdUrl;
+    if (isMobile) {
+      // URL para dispositivos móviles (iOS y Android)
+      bankIdUrl = `https://app.bankid.com/?autostarttoken=${bId.autoStartToken}&redirect=null`;
+    } else {
+      // URL para desktop
+      bankIdUrl = `bankid:///?autostarttoken=${bId.autoStartToken}&redirect=http://localhost:3001/`;
+    }
+console.log(bId);
+
+    res.send({
+      ...bId,
+      bankIdUrl,
+    });
   } catch (error) {
     const errorResponde = errorDescriptions(error.message);
     res.status(500).send({
@@ -63,42 +82,56 @@ route.get("/cancel", async (req, res) => {
   }
 });
 
-route.post('/auth', async (req, res) => {
+route.post("/auth", async (req, res) => {
   try {
-    const response = await axios.post('https://appapi2.test.bankid.com/rp/v5.1/auth', {
-      personalNumber: req.body.personalNumber,
-      endUserIp: req.ip
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SECRET_API_KEY}`
+    const response = await axios.post(
+      "https://appapi2.test.bankid.com/rp/v5.1/auth",
+      {
+        personalNumber: req.body.personalNumber,
+        endUserIp: req.ip,
       },
-      httpsAgent: httpsAgent
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.SECRET_API_KEY}`,
+        },
+        httpsAgent: httpsAgent,
+      }
+    );
 
     res.json(response.data);
   } catch (error) {
-    console.error('Error:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Error al iniciar la autenticación' });
+    console.error(
+      "Error:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({ error: "Error al iniciar la autenticación" });
   }
 });
 
-route.post('/collect', async (req, res) => {
+route.post("/collect", async (req, res) => {
   try {
-    const response = await axios.post('https://appapi2.test.bankid.com/rp/v6.0/collect', {
-      orderRef: req.body.orderRef
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SECRET_API_KEY}`
+    const response = await axios.post(
+      "https://appapi2.test.bankid.com/rp/v6.0/collect",
+      {
+        orderRef: req.body.orderRef,
       },
-      httpsAgent: httpsAgent
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.SECRET_API_KEY}`,
+        },
+        httpsAgent: httpsAgent,
+      }
+    );
 
     res.json(response.data);
   } catch (error) {
-    console.error('Error:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Error al verificar la autenticación' });
+    console.error(
+      "Error:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({ error: "Error al verificar la autenticación" });
   }
 });
 

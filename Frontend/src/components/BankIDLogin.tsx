@@ -13,11 +13,46 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
   const [qrData, setQrData] = useState<string | null>(null)
   const [_orderRef, setOrderRef] = useState<string | null>(null)
   const [authStatus, setAuthStatus] = useState<string | null>(null)
+  const [qrStartToken, setQrStartToken] = useState<string | null>(null)
+  const [qrStartSecret, setQrStartSecret] = useState<string | null>(null)
+
+  const generateQRData = async (qrStartToken: string, qrStartSecret: string, time: number) => {
+    const timeString = time.toString()
+    
+    const encoder = new TextEncoder()
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(qrStartSecret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    )
+    
+    const signature = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(timeString)
+    )
+    
+    const qrAuthCode = Array.from(new Uint8Array(signature))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    
+    const finalQrData = `bankid.${qrStartToken}.${timeString}.${qrAuthCode}`
+    
+    // Agregar console.log para ver el código QR generado
+    console.log(finalQrData)
+    
+    return {
+      qrData: finalQrData,
+      time: time
+    }
+  }
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout
 
-    const fetchQRData = async () => {
+    const fetchInitialData = async () => {
       try {
         const response = await fetch('http://localhost:3000/')
         if (!response.ok) {
@@ -25,19 +60,34 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
         }
         const data = await response.json()
         setOrderRef(data.orderRef)
+        setQrStartToken(data.qrStartToken)
+        setQrStartSecret(data.qrStartSecret)
         
-        // Generar el QR data
-        const time = Math.floor(Date.now() / 1000).toString()
-        const qrAuthCode = await generateQRAuthCode(data.qrStartSecret, time)
-        const newQrData = `bankid.${data.qrStartToken}.${time}.${qrAuthCode}`
-        setQrData(newQrData)
+        // Generar QR inicial con tiempo 0
+        const { qrData } = await generateQRData(
+          data.qrStartToken, 
+          data.qrStartSecret,
+          0 // Tiempo inicial
+        )
+
+        
+        setQrData(qrData)
       } catch (error) {
         console.error('Error:', error)
       }
     }
 
-    fetchQRData()
-    intervalId = setInterval(fetchQRData, 3000)
+    fetchInitialData()
+    
+    // Modificar el intervalo para solo actualizar el QR con nuevo timestamp
+    let timeCounter = 1
+    intervalId = setInterval(async () => {
+      if (qrStartToken && qrStartSecret) {
+        const { qrData } = await generateQRData(qrStartToken, qrStartSecret, timeCounter)
+        setQrData(qrData)
+        timeCounter++
+      }
+    }, 1000) // Actualizar cada segundo
 
     return () => clearInterval(intervalId)
   }, [])
@@ -78,28 +128,9 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
     return () => clearInterval(intervalId)
   }, [_orderRef, onLoginSuccess])
 
-  const generateQRAuthCode = async (qrStartSecret: string, time: string) => {
-    const encoder = new TextEncoder()
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(qrStartSecret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    )
-    const signature = await crypto.subtle.sign(
-      'HMAC',
-      key,
-      encoder.encode(time)
-    )
-    return Array.from(new Uint8Array(signature))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
-  }
-
   const handlePersonalNumberSubmit = async (personalNumber: string) => {
     try {
-      const response = await fetch('http://localhost:3000/', {
+      const response = await fetch('http://localhost:3000/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

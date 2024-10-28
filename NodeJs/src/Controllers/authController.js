@@ -40,6 +40,8 @@ async function authController(userIP) {
       timeout: 5000,
     });
 
+   /*  console.log(response.data); */
+/*     console.log(response.data.autoStartToken); */
 
     return response.data;
   } catch (error) {
