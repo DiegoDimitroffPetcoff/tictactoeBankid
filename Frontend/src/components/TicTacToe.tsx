@@ -62,18 +62,26 @@ export default function TicTacToe({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className="bg-white p-6 rounded-lg shadow-md w-[350px]">
       <div className="text-center mb-4">
-        <p className="text-lg">{status}</p>
+        <p className="text-lg">Next player: {status}</p>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {squares.map((square, i) => (
-          <Square
+          <button
             key={i}
-            value={square}
             onClick={() => handleClick(i)}
-            disabled={isDisabled || !!winner}
-          />
+            disabled={square !== null || isDisabled}
+            className={`
+              w-[100px] h-[100px] text-2xl font-bold
+              ${square === null ? 'bg-blue-50' : 'bg-blue-50'}
+              rounded-lg
+              flex items-center justify-center
+              border border-blue-100
+            `}
+          >
+            {square}
+          </button>
         ))}
       </div>
       <button 
@@ -82,17 +90,6 @@ export default function TicTacToe({
       >
         Reset Game
       </button>
-      {timeRemaining > 0 && (
-        <div className="mt-4 text-center text-blue-500">
-          You have {timeRemaining} seconds left to continue playing. You must
-          log in with BankID to continue playing.
-        </div>
-      )}
-      {isDisabled && (
-        <div className="mt-4 text-center text-red-500">
-          Please log in to continue playing.
-        </div>
-      )}
     </div>
   );
 }
