@@ -5,7 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { PersonalNumberInput } from './PersonalNumberInput'
 
 interface BankIDLoginProps {
-  onLoginSuccess: () => void;
+  onLoginSuccess: (userData: { name: string }) => void;
 }
 
 export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
@@ -15,6 +15,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
   const [authStatus, setAuthStatus] = useState<string | null>(null)
   const [qrStartToken, setQrStartToken] = useState<string | null>(null)
   const [qrStartSecret, setQrStartSecret] = useState<string | null>(null)
+  const [timeCounter, setTimeCounter] = useState<number>(0)
 
   const generateQRData = async (qrStartToken: string, qrStartSecret: string, time: number) => {
     const timeString = time.toString()
@@ -40,7 +41,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
     
     const finalQrData = `bankid.${qrStartToken}.${timeString}.${qrAuthCode}`
     
-    // Agregar console.log para ver el código QR generado
+    // Mejorar el log para ver claramente la secuencia
     console.log(finalQrData)
     
     return {
@@ -49,9 +50,8 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
     }
   }
 
+  // Separar el fetch inicial
   useEffect(() => {
-    let intervalId: NodeJS.Timeout
-
     const fetchInitialData = async () => {
       try {
         const response = await fetch('http://localhost:3000/')
@@ -64,33 +64,58 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
         setQrStartSecret(data.qrStartSecret)
         
         // Generar QR inicial con tiempo 0
-        const { qrData } = await generateQRData(
-          data.qrStartToken, 
-          data.qrStartSecret,
-          0 // Tiempo inicial
-        )
-
-        
-        setQrData(qrData)
+        if (data.qrStartToken && data.qrStartSecret) {
+          const { qrData } = await generateQRData(
+            data.qrStartToken, 
+            data.qrStartSecret,
+            0
+          )
+          setQrData(qrData)
+        }
       } catch (error) {
         console.error('Error:', error)
       }
     }
 
     fetchInitialData()
-    
-    // Modificar el intervalo para solo actualizar el QR con nuevo timestamp
-    let timeCounter = 1
-    intervalId = setInterval(async () => {
+  }, []) // Solo se ejecuta una vez al montar el componente
+
+  // Manejar la actualización del QR cada 3 segundos
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null
+
+    const updateQR = async () => {
+      if (qrStartToken && qrStartSecret) {
+        // Incrementar contador y reiniciar si es mayor a 2
+        setTimeCounter(prevCounter => {
+          const newCounter = prevCounter >= 2 ? 0 : prevCounter + 1
+          return newCounter
+        })
+      }
+    }
+
+    if (qrStartToken && qrStartSecret) {
+      // Iniciar el intervalo
+      intervalId = setInterval(updateQR, 3000) // Actualizar cada 3 segundos
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [qrStartToken, qrStartSecret])
+
+  // Actualizar QR cuando cambie el timeCounter
+  useEffect(() => {
+    const updateQRData = async () => {
       if (qrStartToken && qrStartSecret) {
         const { qrData } = await generateQRData(qrStartToken, qrStartSecret, timeCounter)
         setQrData(qrData)
-        timeCounter++
       }
-    }, 1000) // Actualizar cada segundo
-
-    return () => clearInterval(intervalId)
-  }, [])
+    }
+    updateQRData()
+  }, [timeCounter, qrStartToken, qrStartSecret])
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout
@@ -112,7 +137,9 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
           setAuthStatus(data.status)
           if (data.status === 'complete') {
             clearInterval(intervalId)
-            onLoginSuccess()
+            onLoginSuccess({
+              name: data.completionData?.user?.name || 'Usuario'
+            })
           }
         } catch (error) {
           console.error('Error:', error)
@@ -149,6 +176,67 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
     }
   }
 
+  // Agregar función para manejar el inicio de sesión desde el dispositivo
+  const handleSameDeviceLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/')
+      if (!response.ok) {
+        throw new Error('Error en la autenticación')
+      }
+      const data = await response.json()
+      console.log("Datos de inicio de sesión:", data);
+      
+      // Guardar orderRef para el polling
+      setOrderRef(data.orderRef)
+      
+      // Redireccionar a BankID
+      if (data.bankIdUrl) {
+        window.location.href = data.bankIdUrl
+      }
+      
+      // Iniciar polling inmediatamente
+      startPolling(data.orderRef)
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Hubo un error al iniciar la autenticación. Por favor, intente de nuevo.')
+    }
+  }
+
+  // Función auxiliar para el polling
+  const startPolling = async (orderRef: string) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch('http://localhost:3000/collect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderRef }),
+        })
+        
+        if (!response.ok) {
+          throw new Error('Error al verificar la autenticación')
+        }
+        
+        const data = await response.json()
+        console.log("Estado de autenticación:", data);
+        
+        setAuthStatus(data.status)
+        
+        if (data.status === 'complete') {
+          clearInterval(pollInterval)
+          console.log("Usuario autenticado:", data.completionData?.user);
+          onLoginSuccess({
+            name: data.completionData?.user?.name || 'Usuario'
+          })
+        }
+      } catch (error) {
+        console.error('Error en polling:', error)
+        clearInterval(pollInterval)
+      }
+    }, 2000)
+  }
+
   return (
     <Card className="w-[350px] mx-auto">
       <CardHeader className="text-center">
@@ -159,9 +247,14 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
           Please log in to continue playing Tic Tac Toe
         </div>
         {!showPersonalNumberInput ? (
-          <Button onClick={() => setShowPersonalNumberInput(true)} className="w-full mb-4">
-            Ingresar con número personal
-          </Button>
+          <div className="w-full space-y-2">
+            <Button onClick={() => setShowPersonalNumberInput(true)} className="w-full">
+              Ingresar con número personal
+            </Button>
+            <Button onClick={handleSameDeviceLogin} className="w-full">
+              Iniciar sesión desde este dispositivo
+            </Button>
+          </div>
         ) : (
           <PersonalNumberInput onSubmit={handlePersonalNumberSubmit} />
         )}

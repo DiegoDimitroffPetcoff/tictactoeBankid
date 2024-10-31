@@ -34,16 +34,16 @@ route.get("/", async (req, res) => {
     const bId = await authController(userIP);
     orderRef = bId.orderRef;
 
-    // Construir la URL según el tipo de dispositivo
+    // Modificar la URL de redirección para que vuelva a la misma página
     let bankIdUrl;
     if (isMobile) {
-      // URL para dispositivos móviles (iOS y Android)
       bankIdUrl = `https://app.bankid.com/?autostarttoken=${bId.autoStartToken}&redirect=null`;
     } else {
-      // URL para desktop
-      bankIdUrl = `bankid:///?autostarttoken=${bId.autoStartToken}&redirect=http://localhost:3001/`;
+      // Cambiamos la URL de redirección a null para que no abra una nueva ventana
+      bankIdUrl = `bankid:///?autostarttoken=${bId.autoStartToken}&redirect=null`;
     }
-console.log(bId);
+    
+    console.log("Iniciando autenticación:", bId);
 
     res.send({
       ...bId,
@@ -125,12 +125,15 @@ route.post("/collect", async (req, res) => {
       }
     );
 
+    console.log("Respuesta de collect:", response.data);
+    
+    if (response.data.status === 'complete') {
+      console.log("Usuario autenticado:", response.data.completionData?.user);
+    }
+
     res.json(response.data);
   } catch (error) {
-    console.error(
-      "Error:",
-      error.response ? error.response.data : error.message
-    );
+    console.error("Error en collect:", error.response ? error.response.data : error.message);
     res.status(500).json({ error: "Error al verificar la autenticación" });
   }
 });
