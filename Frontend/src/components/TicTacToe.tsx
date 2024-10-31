@@ -62,38 +62,38 @@ export default function TicTacToe({
   };
 
   return (
-    <Card className="w-[350px]">
-      <CardHeader>
-        <CardTitle>Tic Tac Toe</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 text-center font-bold">{status}</div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {squares.map((square, i) => (
-            <Square
-              key={i}
-              value={square}
-              onClick={() => handleClick(i)}
-              disabled={isDisabled || !!winner}
-            />
-          ))}
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="text-center mb-4">
+        <p className="text-lg">{status}</p>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        {squares.map((square, i) => (
+          <Square
+            key={i}
+            value={square}
+            onClick={() => handleClick(i)}
+            disabled={isDisabled || !!winner}
+          />
+        ))}
+      </div>
+      <button 
+        onClick={resetGame}
+        className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+      >
+        Reset Game
+      </button>
+      {timeRemaining > 0 && (
+        <div className="mt-4 text-center text-blue-500">
+          You have {timeRemaining} seconds left to continue playing. You must
+          log in with BankID to continue playing.
         </div>
-        <Button onClick={resetGame} className="w-full" disabled={isDisabled}>
-          Reset Game
-        </Button>
-        {timeRemaining > 0 && (
-          <div className="mt-4 text-center text-blue-500">
-            You have {timeRemaining} seconds left to continue playing. You must
-            log in with BankID to continue playing.
-          </div>
-        )}
-        {isDisabled && (
-          <div className="mt-4 text-center text-red-500">
-            Please log in to continue playing.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      )}
+      {isDisabled && (
+        <div className="mt-4 text-center text-red-500">
+          Please log in to continue playing.
+        </div>
+      )}
+    </div>
   );
 }
 

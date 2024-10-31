@@ -4,8 +4,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { QRCodeSVG } from 'qrcode.react'
 import { PersonalNumberInput } from './PersonalNumberInput'
 
+// Definir la misma interfaz UserData
+interface UserData {
+  name: string;
+  givenName: string;
+  surname: string;
+  personalNumber: string;
+  notBefore: string;
+  notAfter: string;
+  ipAddress: string;
+}
+
 interface BankIDLoginProps {
-  onLoginSuccess: (userData: { name: string }) => void;
+  // Actualizar el tipo de onLoginSuccess para que coincida con UserData
+  onLoginSuccess: (userData: UserData) => void;
 }
 
 export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
@@ -135,11 +147,20 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
           }
           const data = await response.json()
           setAuthStatus(data.status)
-          if (data.status === 'complete') {
+          if (data.status === 'complete' && data.completionData?.user) {
             clearInterval(intervalId)
+            const user = data.completionData.user;
+            console.log("Usuario autenticado:", user);
+            
             onLoginSuccess({
-              name: data.completionData?.user?.name || 'Usuario'
-            })
+              name: `${user.name}`,
+              givenName: user.givenName,
+              surname: user.surname,
+              personalNumber: user.personalNumber,
+              notBefore: user.notBefore,
+              notAfter: user.notAfter,
+              ipAddress: data.completionData?.device?.ipAddress
+            });
           }
         } catch (error) {
           console.error('Error:', error)
@@ -223,12 +244,20 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
         
         setAuthStatus(data.status)
         
-        if (data.status === 'complete') {
+        if (data.status === 'complete' && data.completionData?.user) {
           clearInterval(pollInterval)
-          console.log("Usuario autenticado:", data.completionData?.user);
+          const user = data.completionData.user;
+          console.log("Usuario autenticado:", user);
+          
           onLoginSuccess({
-            name: data.completionData?.user?.name || 'Usuario'
-          })
+            name: `${user.name}`,
+            givenName: user.givenName,
+            surname: user.surname,
+            personalNumber: user.personalNumber,
+            notBefore: user.notBefore,
+            notAfter: user.notAfter,
+            ipAddress: data.completionData?.device?.ipAddress
+          });
         }
       } catch (error) {
         console.error('Error en polling:', error)
