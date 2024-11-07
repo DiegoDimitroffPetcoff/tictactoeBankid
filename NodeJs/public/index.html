@@ -16,7 +16,7 @@
         try {
           const userIp = "127.0.0.1";
 
-          const response = await fetch("http://localhost:3000", {
+          const response = await fetch("https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/", {
             method: "POST",
             headers: {
               "Content-type": "application/json",
@@ -38,7 +38,7 @@
       function fetchSign(params) {
         console.log("second fectch");
 
-        fetch("http://localhost:3000/sign")
+        fetch("https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//sign")
           .then((response) => response.json())
           .then((data) => {
             console.log(data);

@@ -211,4 +211,4 @@ Run the server:
 bash
 Copy code
 npm start
-The server will be listening on http://localhost:3000.
+The server will be listening on https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/.
