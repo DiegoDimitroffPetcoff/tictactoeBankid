@@ -66,7 +66,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//')
+        const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/')
         if (!response.ok) {
           throw new Error('Error en la autenticación')
         }
@@ -135,7 +135,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
     const checkAuthStatus = async () => {
       if (_orderRef) {
         try {
-          const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//collect', {
+          const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/collect', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
 
   const handlePersonalNumberSubmit = async (personalNumber: string) => {
     try {
-      const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//auth', {
+      const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
   // Agregar función para manejar el inicio de sesión desde el dispositivo
   const handleSameDeviceLogin = async () => {
     try {
-      const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//')
+      const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/')
       if (!response.ok) {
         throw new Error('Error en la autenticación')
       }
@@ -227,7 +227,7 @@ export default function BankIDLogin({ onLoginSuccess }: BankIDLoginProps) {
   const startPolling = async (orderRef: string) => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app//collect', {
+        const response = await fetch('https://tictactoe-bankid-git-main-diegodimitroffpetcoffs-projects.vercel.app/collect', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
