@@ -6,6 +6,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
+const { saveUserInfo } = require("../Database/db");
 
 const route = Router();
 let orderRef;
@@ -128,7 +129,9 @@ route.post("/collect", async (req, res) => {
 
     
     if (response.data.status === 'complete') {
+
       console.log("Usuario autenticado:", response.data.completionData?.user);
+      saveUserInfo(response.data.completionData?.user)
     }
 
     res.json(response.data);

@@ -44,9 +44,9 @@ async function testConnection() {
 }
 
 async function saveUserInfo(userInfo) {
-  await createUsersTable(); // Asegúrate de que la tabla exista
+  await createUsersTable();
 
-  let { personalNumber, orderRef } = userInfo;
+  let { personalNumber, name, givenName, surname, orderRef } = userInfo;
 
   // Generar un valor predeterminado si personalNumber es null
   if (!personalNumber) {
@@ -58,7 +58,7 @@ async function saveUserInfo(userInfo) {
     INSERT INTO users (personal_number, order_ref)
     VALUES (?, ?);
   `;
-  const values = [personalNumber, orderRef];
+  const values = [personalNumber, name, givenName, surname, orderRef];
 
   return new Promise((resolve, reject) => {
     pool.query(query, values, (err, results) => {
