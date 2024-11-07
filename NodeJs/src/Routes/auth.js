@@ -43,7 +43,7 @@ route.get("/", async (req, res) => {
       bankIdUrl = `bankid:///?autostarttoken=${bId.autoStartToken}&redirect=null`;
     }
     
-    console.log("Iniciando autenticación:", bId);
+
 
     res.send({
       ...bId,
@@ -125,7 +125,7 @@ route.post("/collect", async (req, res) => {
       }
     );
 
-    console.log("Respuesta de collect:", response.data);
+
     
     if (response.data.status === 'complete') {
       console.log("Usuario autenticado:", response.data.completionData?.user);
